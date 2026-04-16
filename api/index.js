@@ -88,7 +88,7 @@ app.get('/api/rubrics/:id', async (req, res) => {
 });
 
 app.post('/api/rubrics', async (req, res) => {
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const id = req.body.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 7));
   const rubric = new Rubric({ ...req.body, id });
   await rubric.save();
   res.json(rubric);
@@ -120,7 +120,7 @@ app.get('/api/assignments/:id', async (req, res) => {
 });
 
 app.post('/api/assignments', async (req, res) => {
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const id = req.body.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 7));
   const assignment = new Assignment({ ...req.body, id });
   await assignment.save();
   res.json(assignment);
@@ -152,7 +152,7 @@ app.get('/api/submissions/:id', async (req, res) => {
 });
 
 app.post('/api/submissions', async (req, res) => {
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const id = req.body.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 7));
   const submission = new Submission({ ...req.body, id, submittedAt: new Date(), status: 'pending' });
   await submission.save();
   res.json(submission);
@@ -179,7 +179,7 @@ app.get('/api/results/:id', async (req, res) => {
 });
 
 app.post('/api/results', async (req, res) => {
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const id = req.body.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 7));
   const result = new Result({ ...req.body, id, evaluatedAt: new Date() });
   await result.save();
   res.json(result);

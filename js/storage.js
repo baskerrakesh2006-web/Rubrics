@@ -93,7 +93,7 @@ const Assignments = {
   all: ()       => _get(DB.ASSIGNMENTS),
   get: (id)     => _get(DB.ASSIGNMENTS).find(a => a.id === id),
   byTeacher: (tid)  => _get(DB.ASSIGNMENTS).filter(a => a.teacherId === tid),
-  byStudent: (sid)  => _get(DB.ASSIGNMENTS),
+  byStudent: (sid)  => _get(DB.ASSIGNMENTS).filter(a => !a.assignedTo || a.assignedTo.includes(sid)),
   add: (asgn)   => { const a = { ...asgn, id: uid(), createdAt: now() }; const all = _get(DB.ASSIGNMENTS); all.push(a); _set(DB.ASSIGNMENTS, all); syncCreate('/assignments', a); return a; },
   update: (id, data) => { const all = _get(DB.ASSIGNMENTS).map(a => a.id === id ? { ...a, ...data } : a); _set(DB.ASSIGNMENTS, all); syncUpdate(`/assignments/${id}`, data); },
   delete: (id)  => { _set(DB.ASSIGNMENTS, _get(DB.ASSIGNMENTS).filter(a => a.id !== id)); syncDelete(`/assignments/${id}`); },

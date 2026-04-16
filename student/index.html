@@ -271,7 +271,7 @@ function loadHistory(){
     const a=Assignments.get(s.assignmentId)||{};
     const r=Results.bySubmission(s.id);
     const pct=r?Math.round(r.totalScore/r.totalMarks*100):null;
-    const bc=s.status==='evaluated'?'badge-green':s.status==='error'?'badge-red':'badge-yellow';
+    const bc=s.status==='approved'?'badge-green':s.status==='evaluated'?'badge-teal':s.status==='error'?'badge-red':'badge-yellow';
     return`<tr>
       <td><strong>${a.title||'—'}</strong></td>
       <td class="text-sm text-muted">${formatDateTime(s.submittedAt)}</td>

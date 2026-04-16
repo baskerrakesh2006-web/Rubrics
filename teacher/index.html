@@ -190,6 +190,7 @@ function loadDash(){
       <div><div style="font-weight:600;font-size:.88rem">${st.name||'Student'}</div><div class="text-xs text-muted">${a.title||''} · ${formatDateTime(s.submittedAt)}</div></div>
       <div style="display:flex;align-items:center;gap:12px">
         ${pct!==null?`<span class="badge ${scoreBadge(pct)}">${r.totalScore}/${r.totalMarks}</span>`:`<span class="badge badge-yellow">${s.status}</span>`}
+        ${s.status === 'evaluated' ? `<button class="btn btn-success btn-sm" onclick="approveSubmission('${s.id}')">Approve</button>` : ''}
         <button class="btn btn-outline btn-sm" onclick="viewSubmission('${s.id}')">View Work</button>
       </div>
     </div></div>`;
@@ -418,14 +419,19 @@ function renderSubmissionsReport(){
       const a=Assignments.get(s.assignmentId)||{};
       const r=Results.bySubmission(s.id);
       const pct=r?Math.round(r.totalScore/r.totalMarks*100):null;
-      const bc=s.status==='evaluated'?'badge-green':s.status==='error'?'badge-red':'badge-yellow';
+      const bc=s.status==='approved'?'badge-green':s.status==='evaluated'?'badge-teal':s.status==='error'?'badge-red':'badge-yellow';
       return`<tr>
         <td><strong>${st.name||'—'}</strong><div class="text-xs text-muted">${st.email||''}</div></td>
         <td class="text-sm">${a.title||'—'}</td>
         <td class="text-sm text-muted">${formatDateTime(s.submittedAt)}</td>
         <td><span class="badge ${bc}">${s.status}</span></td>
         <td>${r?`<span class="badge ${scoreBadge(pct)}">${r.totalScore}/${r.totalMarks} (${pct}%)</span>`:'—'}</td>
-        <td><button class="btn btn-ghost btn-sm" onclick="viewSubmission('${s.id}')">View Work</button></td>
+        <td>
+          <div style="display:flex;gap:8px;">
+            ${s.status==='evaluated'?`<button class="btn btn-success btn-sm" onclick="approveSubmission('${s.id}')">Approve</button>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="viewSubmission('${s.id}')">View Work</button>
+          </div>
+        </td>
       </tr>`;
     }).join('')}</tbody>
   </table></div>`;
@@ -461,6 +467,13 @@ function viewSubmission(id){
   document.getElementById('view-sub-title').textContent = `${st.name || 'Student'}'s Submission - ${asgn.title || 'Assignment'}`;
   document.getElementById('view-sub-body').textContent = sub.content || 'No content provided.';
   openModal('view-sub-modal');
+}
+
+function approveSubmission(id) {
+  Submissions.update(id, {status: 'approved'});
+  showToast('Submission approved.', 'success');
+  if(!document.getElementById('sec-dashboard').classList.contains('hidden')) loadDash();
+  if(!document.getElementById('sec-reports').classList.contains('hidden')) renderSubmissionsReport();
 }
 
 function handleHash(){const h=window.location.hash.replace('#','');['dashboard','rubrics','assignments','reports'].includes(h)?showSection(h):showSection('dashboard');}
